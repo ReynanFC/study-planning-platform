@@ -1,0 +1,38 @@
+CREATE TABLE `user` (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE task(
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    completed_at TIMESTAMP NULL,
+    created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
+    updated_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP)
+        ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    category_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL
+);
+
+CREATE TABLE category(
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    category_name VARCHAR(30) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP) NOT NULL,
+    user_id BIGINT NOT NULL
+);
+
+ALTER TABLE task
+    ADD CONSTRAINT
+        FOREIGN KEY (category_id) REFERENCES category (id)
+            ON DELETE RESTRICT;
+
+ALTER TABLE task
+    ADD CONSTRAINT
+        FOREIGN KEY (user_id) REFERENCES `user` (id);
+
+ALTER TABLE category
+    ADD CONSTRAINT
+        FOREIGN KEY (user_id) REFERENCES `user` (id);
