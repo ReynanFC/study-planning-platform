@@ -2,7 +2,7 @@ package com.study.study_planning_platform.dto.response;
 
 import java.time.LocalDateTime;
 
-public record TaskResponse(
+public record TaskResponseDTO(
         Long id,
         String title,
         String description,
