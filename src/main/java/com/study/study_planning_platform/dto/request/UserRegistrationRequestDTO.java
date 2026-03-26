@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record UserRegistrationRequest(
+public record UserRegistrationRequestDTO(
         @NotBlank(message = "Username is required")
         @Size(min = 3, max = 100)
         String userName,
