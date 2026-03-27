@@ -1,7 +1,10 @@
 package com.study.study_planning_platform.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
@@ -25,6 +28,10 @@ public class User implements Serializable {
 
     @Column(name = "password" ,length = 255, nullable = false)
     private String password;
+
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
+    private LocalDate createdAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Task> tasks = new HashSet<>();
@@ -64,6 +71,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public LocalDate getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDate createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Set<Task> getTasks() {

@@ -14,11 +14,13 @@ import org.mapstruct.ReportingPolicy;
 public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "categories", ignore = true)
     User toEntity(UserRegistrationRequestDTO requestDTO);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "userName", ignore = true)
