@@ -5,6 +5,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class Category implements Serializable {
         this.user = user;
     }
 
-    public Set<Task> getTasks() { return tasks; }
+    public Set<Task> getTasks() { return Collections.unmodifiableSet(tasks); }
 
     public void addTask(Task task) {
         tasks.add(task);

@@ -2,6 +2,7 @@ package com.study.study_planning_platform.entities;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -63,6 +64,14 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<Task> getTasks() {
+        return Collections.unmodifiableSet(tasks);
+    }
+
+    public Set<Category> getCategories() {
+        return Collections.unmodifiableSet(categories);
     }
 
     @Override
