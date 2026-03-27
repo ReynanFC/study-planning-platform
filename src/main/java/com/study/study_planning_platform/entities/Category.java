@@ -11,7 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "category")
+@Table(
+        name = "category",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_category_name_user", columnNames = {"category_name", "user_id"})
+        }
+)
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -20,7 +25,7 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_name", length = 30, nullable = false, unique = true)
+    @Column(name = "category_name", length = 30, nullable = false)
     private String categoryName;
 
     @CreationTimestamp
