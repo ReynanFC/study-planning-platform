@@ -2,7 +2,6 @@ package com.study.study_planning_platform.services;
 
 import com.study.study_planning_platform.dto.request.UserLoginRequestDTO;
 import com.study.study_planning_platform.dto.request.UserRegistrationRequestDTO;
-import com.study.study_planning_platform.dto.response.LoginResponseDTO;
 import com.study.study_planning_platform.dto.response.UserResponseDTO;
 import com.study.study_planning_platform.entities.User;
 import com.study.study_planning_platform.exceptions.ResourceNotFoundException;
