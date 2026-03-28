@@ -7,6 +7,7 @@ import com.study.study_planning_platform.entities.User;
 import com.study.study_planning_platform.exceptions.ResourceNotFoundException;
 import com.study.study_planning_platform.mapper.CategoryMapper;
 import com.study.study_planning_platform.repository.CategoryRepository;
+import com.study.study_planning_platform.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,14 +18,16 @@ import org.springframework.stereotype.Service;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final TaskRepository taskRepository;
     private final CategoryMapper mapper;
     private final UserService userService;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    public CategoryService(CategoryRepository categoryRepository, CategoryMapper mapper, UserService service) {
+    public CategoryService(CategoryRepository categoryRepository, TaskRepository taskRepository, CategoryMapper mapper, UserService userService) {
         this.categoryRepository = categoryRepository;
+        this.taskRepository = taskRepository;
         this.mapper = mapper;
-        this.userService = service;
+        this.userService = userService;
     }
 
     @Transactional
@@ -40,6 +43,24 @@ public class CategoryService {
 
          logger.info("Created a category '{}' by user: {}", savedCategory.getCategoryName(), user.getEmail());
          return mapper.toResponseDTO(savedCategory);
+    }
+
+    @Transactional
+    public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO dto) {
+        User user = userService.getCurrentUser();
+
+        logger.info("Updating a category by user via email: {}", user.getEmail());
+
+        Category category = categoryRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> {
+                   logger.warn("Category not found or access denied with id: {}", id);
+                   return new ResourceNotFoundException("Category not found");
+                });
+
+        category.setCategoryName(dto.categoryName());
+
+        logger.info("Category '{}' updated by user: {}", category.getCategoryName(), user.getEmail());
+        return mapper.toResponseDTO(category);
     }
 
     @Transactional

@@ -81,10 +81,9 @@ public class TaskService {
         task.setTitle(dto.title());
         task.setDescription(dto.description());
 
-        Task updatedTask = taskRepository.save(task);
-        logger.info("Task '{}' updated for user: {}", updatedTask.getTitle(), user.getEmail());
+        logger.info("Task '{}' updated for user: {}", task.getTitle(), user.getEmail());
 
-        return mapper.toResponseDTO(updatedTask);
+        return mapper.toResponseDTO(task);
     }
 
     public Page<TaskMinDTO> getTasksByCategory(Long categoryId, Pageable pageable) {
