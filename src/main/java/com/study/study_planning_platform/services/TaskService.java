@@ -1,6 +1,7 @@
 package com.study.study_planning_platform.services;
 
 import com.study.study_planning_platform.dto.request.TaskRequestDTO;
+import com.study.study_planning_platform.dto.response.TaskMinDTO;
 import com.study.study_planning_platform.dto.response.TaskResponseDTO;
 import com.study.study_planning_platform.entities.Category;
 import com.study.study_planning_platform.entities.Task;
@@ -86,7 +87,7 @@ public class TaskService {
         return mapper.toResponseDTO(updatedTask);
     }
 
-    public Page<TaskResponseDTO> getTasksByCategory(Long categoryId, Pageable pageable) {
+    public Page<TaskMinDTO> getTasksByCategory(Long categoryId, Pageable pageable) {
         User user = userService.getCurrentUser();
 
         logger.info("Getting tasks for category: {} in user: {}", categoryId, user.getId());
@@ -98,7 +99,7 @@ public class TaskService {
                 });
 
         return taskRepository.findByCategoryIdAndUserId(categoryId, user.getId(), pageable)
-                .map(mapper::toResponseDTO);
+                .map(mapper :: toMinDTO);
     }
 
     @Transactional
@@ -106,7 +107,10 @@ public class TaskService {
         User user = userService.getCurrentUser();
 
         Task task = taskRepository.findByIdAndUserId(id, user.getId())
-                        .orElseThrow(() -> new ResourceNotFoundException("Task Not Found"));
+                        .orElseThrow(() -> {
+                            logger.warn("Task {} not found or access denied", id);
+                            return new ResourceNotFoundException("Task Not Found");
+                        });
 
         taskRepository.delete(task);
     }
