@@ -12,7 +12,6 @@ import com.study.study_planning_platform.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,37 +32,32 @@ public class TaskService {
 
     @Transactional
     public TaskResponseDTO createTask(TaskRequestDTO dto) {
-
-        logger.info("Creating task with title: {} of the category with id: {}", dto.title(), dto.categoryId());
-
-        Category category = categoryRepository.findById(dto.categoryId())
-                .orElseThrow(() -> {
-                    logger.warn("Category ID {} not found", dto.categoryId());
-                    return new ResourceNotFoundException("Category Not Found");
-                });
-
         User user = userService.getCurrentUser();
 
+        logger.info("Creating task for user: {} in category: {}", user.getEmail(), dto.categoryId());
 
-
+        Category category = categoryRepository.findByIdAndUserId(dto.categoryId(), user.getId())
+                .orElseThrow(() -> {
+                    logger.warn("Category ID {} not found or access denied for user {}", dto.categoryId(), user.getEmail());
+                    return new ResourceNotFoundException("Category Not Found");
+                });
 
         Task task = mapper.toEntity(dto);
 
         task.setUser(user);
         category.addTask(task);
 
-        logger.info("Task '{}' successfully created for user: {}", task .getTitle(), user.getEmail());
+        Task savedTask = taskRepository.save(task);
+        logger.info("Task '{}' successfully created for user: {}", savedTask.getTitle(), user.getEmail())
 
-        return mapper.toResponseDTO(taskRepository.save(task));
+        return mapper.toResponseDTO(savedTask);
     }
 
     @Transactional
     public void deleteTask(Long id) {
-        logger.info("Deleting task with id: {}", id);
-
         User user = userService.getCurrentUser();
 
-        if ()
+
         taskRepository.deleteById(id);
     }
 

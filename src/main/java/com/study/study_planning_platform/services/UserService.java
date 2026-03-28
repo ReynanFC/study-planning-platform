@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -44,8 +43,11 @@ public class UserService {
         User user = mapper.toEntity(dto);
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        User savedUser = userRepository.save(user);
 
-        return  mapper.toResponseDTO(userRepository.save(user));
+        logger.info("User with email: {} was saved", savedUser.getEmail());
+
+        return  mapper.toResponseDTO(savedUser);
     }
 
     public User validateCredentials(UserLoginRequestDTO dto) {
@@ -65,9 +67,10 @@ public class UserService {
 
     public User getCurrentUser() {
         logger.debug("Get current User");
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String email = authentication.getName();
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
 
         logger.info("Current User: {}", email);
 
