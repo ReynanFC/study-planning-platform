@@ -20,13 +20,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper mapper;
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public UserService(UserRepository repository, UserMapper mapper, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.repository = repository;
+        this.userRepository = repository;
         this.mapper = mapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -36,7 +36,7 @@ public class UserService {
 
         logger.info("Register User with e-mail: {}", dto.email());
 
-        if (repository.findByEmail(dto.email()).isPresent()) {
+        if (userRepository.findByEmail(dto.email()).isPresent()) {
             logger.warn("Trying to register already User with email: {}", dto.email());
             throw new DataIntegrityViolationException("Email already exists");
         }
@@ -45,14 +45,14 @@ public class UserService {
 
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
-        return  mapper.toResponseDTO(repository.save(user));
+        return  mapper.toResponseDTO(userRepository.save(user));
     }
 
     public User validateCredentials(UserLoginRequestDTO dto) {
 
         logger.info("Validate User with email: {}", dto.email());
 
-        User user = repository.findByEmail(dto.email())
+        User user = userRepository.findByEmail(dto.email())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
         if (!bCryptPasswordEncoder.matches(dto.password(), user.getPassword())) {
@@ -64,14 +64,14 @@ public class UserService {
     }
 
     public User getCurrentUser() {
-        logger.info("Get current User");
+        logger.debug("Get current User");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String email = authentication.getName();
 
         logger.info("Current User: {}", email);
 
-        return repository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found in the context"));
     }
 
