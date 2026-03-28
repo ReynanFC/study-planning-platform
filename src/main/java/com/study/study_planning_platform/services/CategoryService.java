@@ -54,7 +54,7 @@ public class CategoryService {
                     return new ResourceNotFoundException("Category not found");
                 });
 
-        if (!category.getTasks().isEmpty()) {
+        if (taskRepository.existsByCategoryId(id)) {
             throw new DataIntegrityViolationException("It is not possible to delete a category with related tasks");
         }
 
