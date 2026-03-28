@@ -38,9 +38,7 @@ public class GlobalExceptionHandler {
         HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
 
         return ResponseEntity.status(status)
-                .body(
-                        buildError(status, exception, request)
-                );
+                .body(buildError(status, exception, request));
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -75,30 +73,28 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<StandardError> handleDataIntegrity(HttpServletRequest request) {
+    public ResponseEntity<StandardError> handleDataIntegrity(DataIntegrityViolationException exception, HttpServletRequest request) {
+
         HttpStatus status = HttpStatus.CONFLICT;
-        return ResponseEntity.status(status).body(new StandardError(
-                Instant.now(), status.value(), "Data integrity violation (email already exists or record linked)", request.getRequestURI()));
+
+        return ResponseEntity.status(status).body(buildError(status, exception, request));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
-    public ResponseEntity<StandardError> handleBadCredentials(HttpServletRequest request) {
+    public ResponseEntity<StandardError> handleBadCredentials(BadCredentialsException exception , HttpServletRequest request) {
+
         HttpStatus status = HttpStatus.UNAUTHORIZED;
-        return ResponseEntity.status(status).body(new StandardError(
-                Instant.now(), status.value(), "E-mail or key invalid", request.getRequestURI()));
+
+        return ResponseEntity.status(status).body(buildError(status, exception, request));
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<StandardError> handleAccessDeniedException(HttpServletRequest request) {
+    public ResponseEntity<StandardError> handleAccessDeniedException(AccessDeniedException exception , HttpServletRequest request) {
 
         HttpStatus status = HttpStatus.FORBIDDEN;
 
         return ResponseEntity.status(status)
-                .body(new StandardError(
-                        Instant.now(),
-                        status.value(),
-                        "You don't have permission to access this resource",
-                        request.getRequestURI()
-                ));
+                .body(buildError(status, exception, request));
+
     }
 }
