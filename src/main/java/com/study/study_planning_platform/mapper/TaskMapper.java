@@ -1,6 +1,7 @@
 package com.study.study_planning_platform.mapper;
 
 import com.study.study_planning_platform.dto.request.TaskRequestDTO;
+import com.study.study_planning_platform.dto.response.TaskMinDTO;
 import com.study.study_planning_platform.dto.response.TaskResponseDTO;
 import com.study.study_planning_platform.entities.Task;
 import org.mapstruct.Mapper;
@@ -26,5 +27,5 @@ public interface TaskMapper {
     @Mapping(target = "categoryName", source = "category.categoryName")
     TaskResponseDTO  toResponseDTO(Task task);
 
-    List<TaskResponseDTO>  toResponseListDTO(List<Task> tasks);
+    TaskMinDTO toMinDTO(Task task);
 }
