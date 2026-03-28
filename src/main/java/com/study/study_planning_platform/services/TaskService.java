@@ -89,8 +89,13 @@ public class TaskService {
     public Page<TaskResponseDTO> getTasksByCategory(Long categoryId, Pageable pageable) {
         User user = userService.getCurrentUser();
 
+        logger.info("Getting tasks for category: {} in user: {}", categoryId, user.getId());
+
         categoryRepository.findByIdAndUserId(categoryId, user.getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+                .orElseThrow(() -> {
+                    logger.warn("Category ID {} not found or access denied", categoryId);
+                    return new ResourceNotFoundException("Category not found");
+                });
 
         return taskRepository.findByCategoryIdAndUserId(categoryId, user.getId(), pageable)
                 .map(mapper::toResponseDTO);
