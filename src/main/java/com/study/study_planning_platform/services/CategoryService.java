@@ -2,6 +2,7 @@ package com.study.study_planning_platform.services;
 
 import com.study.study_planning_platform.dto.request.CategoryRequestDTO;
 import com.study.study_planning_platform.dto.response.CategoryResponseDTO;
+import com.study.study_planning_platform.dto.response.CategoryWithTasksResponseDTO;
 import com.study.study_planning_platform.entities.Category;
 import com.study.study_planning_platform.entities.User;
 import com.study.study_planning_platform.exceptions.ResourceNotFoundException;
@@ -12,6 +13,8 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,6 +44,25 @@ public class CategoryService {
 
         logger.info("Category '{}' (ID: {}) created for user: {}", savedCategory.getCategoryName(), savedCategory.getId(), user.getEmail());
         return mapper.toResponseDTO(savedCategory);
+    }
+
+    public Page<CategoryResponseDTO> getAllCategories(Pageable pageable) {
+        User user = userService.getCurrentUser();
+
+        logger.info("Fetching all categories for user: {}", user.getEmail());
+        return categoryRepository.findByUserId(user.getId(), pageable)
+                .map(mapper::toResponseDTO);
+    }
+
+    public CategoryWithTasksResponseDTO getCategoryWithTasks(Long id) {
+        User user = userService.getCurrentUser();
+
+        return categoryRepository.findByIdWithTasks(id, user.getId())
+                .map(mapper::toResponseWithTasksDTO)
+                .orElseThrow(() -> {
+                    logger.warn("Category access failed: ID {} not found or unauthorized for user {}", id, user.getEmail());
+                    return new ResourceNotFoundException("Category not found");
+                });
     }
 
     @Transactional
