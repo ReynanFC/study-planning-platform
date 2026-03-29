@@ -21,7 +21,7 @@ public class CategoryService {
     private final TaskRepository taskRepository;
     private final CategoryMapper mapper;
     private final UserService userService;
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
 
     public CategoryService(CategoryRepository categoryRepository, TaskRepository taskRepository, CategoryMapper mapper, UserService userService) {
         this.categoryRepository = categoryRepository;
@@ -32,54 +32,47 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponseDTO createCategory(CategoryRequestDTO dto) {
-         User user = userService.getCurrentUser();
+        User user = userService.getCurrentUser();
 
-         logger.info("Creating a category by user via email: {}", user.getEmail());
+        Category category = mapper.toEntity(dto);
+        category.setUser(user);
 
-         Category category = mapper.toEntity(dto);
-         category.setUser(user);
+        Category savedCategory = categoryRepository.save(category);
 
-         Category savedCategory = categoryRepository.save(category);
-
-         logger.info("Created a category '{}' by user: {}", savedCategory.getCategoryName(), user.getEmail());
-         return mapper.toResponseDTO(savedCategory);
+        logger.info("Category '{}' (ID: {}) created for user: {}", savedCategory.getCategoryName(), savedCategory.getId(), user.getEmail());
+        return mapper.toResponseDTO(savedCategory);
     }
 
     @Transactional
     public CategoryResponseDTO updateCategory(Long id, CategoryRequestDTO dto) {
         User user = userService.getCurrentUser();
-
-        logger.info("Updating a category by user via email: {}", user.getEmail());
-
-        Category category = categoryRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> {
-                   logger.warn("Category not found or access denied with id: {}", id);
-                   return new ResourceNotFoundException("Category not found");
-                });
+        Category category = getCategoryOrThrow(id, user);
 
         category.setCategoryName(dto.categoryName());
 
-        logger.info("Category '{}' updated by user: {}", category.getCategoryName(), user.getEmail());
+        logger.info("Category ID: {} updated to '{}' by user: {}", id, category.getCategoryName(), user.getEmail());
         return mapper.toResponseDTO(category);
     }
 
     @Transactional
     public void deleteCategory(Long id) {
         User user = userService.getCurrentUser();
-
-        logger.info("Deleting a category by user via email: {}", user.getEmail());
-
-        Category category = categoryRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> {
-                    logger.warn("Category not found or access denied with id: {}", id);
-                    return new ResourceNotFoundException("Category not found");
-                });
+        Category category = getCategoryOrThrow(id, user);
 
         if (taskRepository.existsByCategoryId(id)) {
+            logger.warn("Delete failed: Category ID {} has related tasks. User: {}", id, user.getEmail());
             throw new DataIntegrityViolationException("It is not possible to delete a category with related tasks");
         }
 
         categoryRepository.delete(category);
-        logger.info("Category '{}' deleted by user: {}", category.getCategoryName(), user.getEmail());
+        logger.info("Category '{}' (ID: {}) deleted by user: {}", category.getCategoryName(), id, user.getEmail());
+    }
+
+    private Category getCategoryOrThrow(Long id, User user) {
+        return categoryRepository.findByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> {
+                    logger.warn("Category access failed: ID {} not found or unauthorized for user {}", id, user.getEmail());
+                    return new ResourceNotFoundException("Category not found");
+                });
     }
 }

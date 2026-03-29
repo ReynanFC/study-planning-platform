@@ -10,22 +10,10 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+        unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "tasks", ignore = true)
-    @Mapping(target = "categories", ignore = true)
     User toEntity(UserRegistrationRequestDTO requestDTO);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "tasks", ignore = true)
-    @Mapping(target = "categories", ignore = true)
-    @Mapping(target = "userName", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    User toEntity(UserLoginRequestDTO requestDTO);
 
     UserResponseDTO toResponseDTO(User user);
 }
