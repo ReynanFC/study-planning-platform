@@ -1,6 +1,5 @@
 package com.study.study_planning_platform.services;
 
-import com.study.study_planning_platform.dto.request.UserLoginRequestDTO;
 import com.study.study_planning_platform.dto.request.UserRegistrationRequestDTO;
 import com.study.study_planning_platform.dto.response.UserResponseDTO;
 import com.study.study_planning_platform.entities.User;
@@ -11,8 +10,6 @@ import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -26,16 +23,13 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper mapper;
-    private final AuthenticationManager authenticationManager;
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 
     public UserService(UserRepository repository, UserMapper mapper,
-                       BCryptPasswordEncoder bCryptPasswordEncoder,
-                       AuthenticationManager authenticationManager) {
+                       BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = repository;
         this.mapper = mapper;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.authenticationManager = authenticationManager;
     }
 
     @Transactional
@@ -53,17 +47,6 @@ public class UserService implements UserDetailsService {
 
         logger.info("User with email: {} was saved", savedUser.getEmail());
         return mapper.toResponseDTO(savedUser);
-    }
-
-    public User login(UserLoginRequestDTO dto) {
-        logger.info("Attempting login for user: {}", dto.email());
-
-        var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.email(), dto.password())
-        );
-
-        logger.info("User {} authenticated successfully", dto.email());
-        return (User) auth.getPrincipal();
     }
 
     public User getCurrentUser() {
