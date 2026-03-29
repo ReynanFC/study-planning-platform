@@ -11,7 +11,8 @@ import org.mapstruct.ReportingPolicy;
 import java.util.List;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
-        unmappedTargetPolicy = ReportingPolicy.ERROR)
+        unmappedTargetPolicy = ReportingPolicy.ERROR,
+        uses = TaskMapper.class)
 public interface CategoryMapper {
 
     @Mapping(target = "id", ignore = true)
