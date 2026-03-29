@@ -36,9 +36,10 @@ public class AuthController implements AuthControllerDocs {
 
     @PostMapping("/register")
     @Override
-    public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRegistrationRequestDTO dto) {
+    public ResponseEntity<Void> register(@RequestBody @Valid UserRegistrationRequestDTO dto) {
         logger.info("Register request for email: {}", dto.email());
-        return ResponseEntity.status(201).body(userService.register(dto));
+        userService.register(dto);
+        return ResponseEntity.status(201).build();
     }
 
     @PostMapping("/login")
