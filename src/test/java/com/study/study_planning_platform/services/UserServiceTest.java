@@ -67,12 +67,9 @@ class UserServiceTest {
             when(mapper.toEntity(dto)).thenReturn(user);
             when(bCryptPasswordEncoder.encode(anyString())).thenReturn("encodedPassword");
             when(userRepository.save(user)).thenReturn(user);
-            when(mapper.toResponseDTO(user)).thenReturn(userResponseDTO);
 
-            UserResponseDTO result = userService.register(dto);
+            userService.register(dto);
 
-            assertThat(result).isNotNull();
-            assertThat(result.email()).isEqualTo("user@email.com");
             verify(userRepository).save(user);
         }
 
@@ -87,7 +84,6 @@ class UserServiceTest {
             when(mapper.toEntity(dto)).thenReturn(newUser);
             when(bCryptPasswordEncoder.encode("123456")).thenReturn("encodedPassword");
             when(userRepository.save(newUser)).thenReturn(newUser);
-            when(mapper.toResponseDTO(newUser)).thenReturn(userResponseDTO);
 
             userService.register(dto);
 
@@ -107,6 +103,48 @@ class UserServiceTest {
                     .hasMessage("Email already exists");
 
             verify(userRepository, never()).save(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("getUser")
+    class GetUser {
+
+        @Test
+        @DisplayName("should return DTO of current authenticated user")
+        void shouldReturnDTOOfCurrentAuthenticatedUser() {
+            Authentication authentication = mock(Authentication.class);
+            SecurityContext securityContext = mock(SecurityContext.class);
+
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+            when(authentication.getName()).thenReturn("user@email.com");
+            SecurityContextHolder.setContext(securityContext);
+
+            when(userRepository.findByEmail("user@email.com")).thenReturn(Optional.of(user));
+            when(mapper.toResponseDTO(user)).thenReturn(userResponseDTO);
+
+            UserResponseDTO result = userService.getUser();
+
+            assertThat(result).isNotNull();
+            assertThat(result.email()).isEqualTo("user@email.com");
+            assertThat(result.userName()).isEqualTo("username");
+        }
+
+        @Test
+        @DisplayName("should throw ResourceNotFoundException when user not found")
+        void shouldThrowWhenUserNotFound() {
+            Authentication authentication = mock(Authentication.class);
+            SecurityContext securityContext = mock(SecurityContext.class);
+
+            when(securityContext.getAuthentication()).thenReturn(authentication);
+            when(authentication.getName()).thenReturn("ghost@email.com");
+            SecurityContextHolder.setContext(securityContext);
+
+            when(userRepository.findByEmail("ghost@email.com")).thenReturn(Optional.empty());
+
+            assertThatThrownBy(() -> userService.getUser())
+                    .isInstanceOf(ResourceNotFoundException.class)
+                    .hasMessage("User not found in the context");
         }
     }
 
