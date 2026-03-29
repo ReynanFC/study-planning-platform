@@ -1,5 +1,6 @@
 package com.study.study_planning_platform.controllers;
 
+import com.study.study_planning_platform.controllers.docs.AuthControllerDocs;
 import com.study.study_planning_platform.dto.request.UserLoginRequestDTO;
 import com.study.study_planning_platform.dto.request.UserRegistrationRequestDTO;
 import com.study.study_planning_platform.dto.response.UserResponseDTO;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthController implements AuthControllerDocs {
 
     private final UserService userService;
     private final TokenService tokenService;
@@ -34,12 +35,14 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Override
     public ResponseEntity<UserResponseDTO> register(@RequestBody @Valid UserRegistrationRequestDTO dto) {
         logger.info("Register request for email: {}", dto.email());
         return ResponseEntity.status(201).body(userService.register(dto));
     }
 
     @PostMapping("/login")
+    @Override
     public ResponseEntity<String> login(@RequestBody @Valid UserLoginRequestDTO dto) {
         logger.info("Login request for email: {}", dto.email());
 
