@@ -12,8 +12,5 @@ public record TaskRequestDTO(
         String description,
 
         @NotNull(message = "Category ID is required")
-        Long categoryId,
-
-        @NotNull(message = "User ID is required")
-        Long userId
+        Long categoryId
 ) {}
