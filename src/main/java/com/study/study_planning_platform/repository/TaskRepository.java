@@ -13,6 +13,5 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Optional<Task> findByIdAndUserId(Long id, Long userId);
-    Page<Task> findByCategoryIdAndUserId(Long categoryId, Long userId, Pageable pageable);
     boolean existsByCategoryId(Long categoryId);
 }
