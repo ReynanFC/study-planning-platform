@@ -5,12 +5,18 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Table(name = "category")
+@Table(
+        name = "category",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_category_name_user", columnNames = {"category_name", "user_id"})
+        }
+)
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -19,7 +25,7 @@ public class Category implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "category_name", length = 30, nullable = false, unique = true)
+    @Column(name = "category_name", length = 30, nullable = false)
     private String categoryName;
 
     @CreationTimestamp
@@ -30,7 +36,7 @@ public class Category implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<Task> tasks = new HashSet<>();
 
     public Category() {}
@@ -52,7 +58,7 @@ public class Category implements Serializable {
         this.user = user;
     }
 
-    public Set<Task> getTasks() { return tasks; }
+    public Set<Task> getTasks() { return Collections.unmodifiableSet(tasks); }
 
     public void addTask(Task task) {
         tasks.add(task);
