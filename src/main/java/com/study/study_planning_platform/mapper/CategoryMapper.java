@@ -2,6 +2,7 @@ package com.study.study_planning_platform.mapper;
 
 import com.study.study_planning_platform.dto.request.CategoryRequestDTO;
 import com.study.study_planning_platform.dto.response.CategoryResponseDTO;
+import com.study.study_planning_platform.dto.response.CategoryWithTasksResponseDTO;
 import com.study.study_planning_platform.entities.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,5 +24,4 @@ public interface CategoryMapper {
 
     CategoryResponseDTO toResponseDTO(Category category);
 
-    List<CategoryResponseDTO> toResponseListDTO(List<Category> categories);
-}
+    CategoryWithTasksResponseDTO toResponseWithTasksDTO(Category category);}
