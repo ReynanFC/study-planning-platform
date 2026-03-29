@@ -6,6 +6,6 @@ import java.util.List;
 public record CategoryResponseDTO(
         Long id,
         String categoryName,
-        List<TaskMinDTO> tasks,
+        List<TaskMinResponseDTO> tasks,
         LocalDateTime createdAt
 ) {}
