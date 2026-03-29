@@ -18,6 +18,7 @@
         <java.version>21</java.version>
         <org.mapstruct.version>1.6.3</org.mapstruct.version>
         <jwt.version>4.4.0</jwt.version>
+        <spring.doc>3.0.2</spring.doc>
     </properties>
 
     <dependencies>
@@ -85,6 +86,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${spring.doc}</version>
         </dependency>
     </dependencies>
 
