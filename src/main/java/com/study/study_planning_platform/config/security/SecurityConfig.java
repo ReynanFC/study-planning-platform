@@ -1,4 +1,4 @@
-package com.study.study_planning_platform.config;
+package com.study.study_planning_platform.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

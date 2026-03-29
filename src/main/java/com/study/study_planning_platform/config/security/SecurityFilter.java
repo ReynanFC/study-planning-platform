@@ -1,4 +1,4 @@
-package com.study.study_planning_platform.config;
+package com.study.study_planning_platform.config.security;
 
 import com.study.study_planning_platform.exceptions.ResourceNotFoundException;
 import com.study.study_planning_platform.repository.UserRepository;
