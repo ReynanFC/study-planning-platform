@@ -1,5 +1,6 @@
 package com.study.study_planning_platform.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -10,13 +11,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-@Entity
-@Table(
-        name = "category",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_category_name_user", columnNames = {"category_name", "user_id"})
-        }
-)
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -36,6 +30,7 @@ public class Category implements Serializable {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Set<Task> tasks = new HashSet<>();
 
