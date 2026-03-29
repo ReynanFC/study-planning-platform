@@ -32,8 +32,16 @@ public class UserService implements UserDetailsService {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
+    public UserResponseDTO getUser() {
+        User user = getCurrentUser();
+
+        logger.info("Fetching profile for user: {}", user.getEmail());
+
+        return mapper.toResponseDTO(user);
+    }
+
     @Transactional
-    public UserResponseDTO register(UserRegistrationRequestDTO dto) {
+    public void register(UserRegistrationRequestDTO dto) {
         logger.info("Register User with e-mail: {}", dto.email());
 
         if (userRepository.findByEmail(dto.email()).isPresent()) {
@@ -43,10 +51,9 @@ public class UserService implements UserDetailsService {
 
         User user = mapper.toEntity(dto);
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        User savedUser = userRepository.save(user);
+        userRepository.save(user);
 
-        logger.info("User with email: {} was saved", savedUser.getEmail());
-        return mapper.toResponseDTO(savedUser);
+        logger.info("User with email: {} was saved", user.getEmail());
     }
 
     public User getCurrentUser() {
