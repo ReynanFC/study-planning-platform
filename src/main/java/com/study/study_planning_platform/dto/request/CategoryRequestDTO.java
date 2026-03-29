@@ -7,8 +7,5 @@ import jakarta.validation.constraints.Size;
 public record CategoryRequestDTO(
         @NotBlank(message = "Category name is required")
         @Size(max = 30)
-        String categoryName,
-
-        @NotNull(message = "User ID is required")
-        Long userId
+        String categoryName
 ) {}
