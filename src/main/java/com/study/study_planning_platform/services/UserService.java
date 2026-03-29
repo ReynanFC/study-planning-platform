@@ -51,17 +51,20 @@ public class UserService {
     }
 
     public User validateCredentials(UserLoginRequestDTO dto) {
-
-        logger.info("Validate User with email: {}", dto.email());
+        logger.info("Attempting login for user: {}", dto.email());
 
         User user = userRepository.findByEmail(dto.email())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+                .orElseThrow(() -> {
+                    logger.warn("Login failed: User {} not found", dto.email());
+                    return new BadCredentialsException("Invalid email or password");
+                });
 
         if (!bCryptPasswordEncoder.matches(dto.password(), user.getPassword())) {
-            logger.warn("Trying to login with incorrect password");
+            logger.warn("Login failed: Incorrect password for user {}", dto.email());
             throw new BadCredentialsException("Invalid email or password");
         }
 
+        logger.info("User {} authenticated successfully", dto.email());
         return user;
     }
 
