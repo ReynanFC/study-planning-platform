@@ -11,6 +11,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+@Entity
+@Table(
+        name = "category",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_category_name_user", columnNames = {"category_name", "user_id"})
+        }
+)
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;
